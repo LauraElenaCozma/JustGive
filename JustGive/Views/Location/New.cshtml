@@ -1,0 +1,25 @@
+﻿@model JustGive.Models.Location
+@{
+    ViewBag.Title = "New location";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm(actionName: "New", controllerName: "Location", method: FormMethod.Post))
+{
+    @Html.LabelFor(loc => loc.City)
+    <br />
+    @Html.TextBoxFor(loc => loc.City, null, new { placeholder = "Type in the location's city", @class = "form-control" })
+    @Html.ValidationMessageFor(loc => loc.City, "", new { @class = "text-danger" })
+    <br />
+    @Html.LabelFor(loc => loc.Country)
+    <br />
+    @Html.TextBoxFor(loc => loc.Country, null, new { placeholder = "Type in the location's country", @class = "form-control" })
+    @Html.ValidationMessageFor(loc => loc.Country, "", new { @class = "text-danger" })
+
+    <br />
+    <button class="btn btn-primary" type="submit">Add location</button>
+
+}
+
+

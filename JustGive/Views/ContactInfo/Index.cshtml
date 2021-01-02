@@ -1,0 +1,26 @@
+﻿
+@{
+    ViewBag.Title = "All contact infos";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@foreach(var contact in @ViewBag.ContactInfos)
+{
+    <div class="panel panel-default">
+        <div class="panel panel-body">
+            @Html.Label("Name:", "Name")
+            <p>@contact.Name</p>
+            <br />
+            @Html.Label("Phone number:", "PhoneNumber")
+            <p>@contact.PhoneNumber</p>
+
+            @using (Html.BeginForm(actionName: "Details", controllerName: "ContactInfo", method: FormMethod.Get, routeValues: new { id = contact.Id }))
+            {
+                <button class="btn btn-primary" type="submit">Details</button>
+            }
+        </div>
+    </div>
+}
+
+@Html.ActionLink("Add a new Contact Info", "New")

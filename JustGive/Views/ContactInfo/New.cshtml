@@ -1,0 +1,19 @@
+﻿@model JustGive.Models.ContactInfo
+@{
+    ViewBag.Title = "New";
+}
+
+<h2>New</h2>
+@using (Html.BeginForm(actionName: "New", controllerName: "ContactInfo", method: FormMethod.Post))
+{
+    @Html.LabelFor(ct => ct.Name)
+    @Html.TextBoxFor(ct => ct.Name, null, new { placeholder = "Type in the name of the contact info", @class = "form-control" })
+    @Html.ValidationMessageFor(ct => ct.Name, "", new { @class = "text-danger" })
+    <br />
+    @Html.Label("PhoneNumber", "Phone Number:")
+    @Html.TextBoxFor(ct => ct.PhoneNumber, null, new { placeholder = "Type in the phone number of the contact info", @class = "form-control" })
+    @Html.ValidationMessageFor(ct => ct.PhoneNumber, "", new { @class = "text-danger" })
+    <br />
+    <button class="btn btn-primary" type="submit">Add new contact info</button>
+}
+

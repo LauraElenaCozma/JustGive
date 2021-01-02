@@ -1,0 +1,52 @@
+﻿@model JustGive.Models.CauseContactViewModel
+@{
+    ViewBag.Title = "New";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm(actionName: "New", controllerName: "Cause", method: FormMethod.Post))
+{
+    @Html.LabelFor(c => c.Cause.Title)
+    <br />
+    @Html.TextBoxFor(c => c.Cause.Title, null,
+                    new { placeholder = "Type in the cause's title", @class = "form-control" })
+    @Html.ValidationMessageFor(c => c.Cause.Title, "", new { @class = "text-danger" })
+    <br />
+
+    @Html.LabelFor(c => c.Cause.Description)
+    @Html.TextAreaFor(c => c.Cause.Description,
+                    new { placeholder = "Type in the cause's summary", @class = "form-control", @rows = "10" })
+    @Html.ValidationMessageFor(c => c.Cause.Description, "", new { @class = "text-danger" })
+    <br />
+    @Html.LabelFor(c => c.Cause.Location)
+    <br />
+    @Html.DropDownListFor(c => c.Cause.LocationId, new SelectList(Model.Cause.LocationList, "Value", "Text"), "Choose a location", new { @class = "form-control" })
+    @Html.ValidationMessageFor(c => c.Cause.LocationId, "", new { @class = "text-danger" })
+    <br />
+    @Html.LabelFor(c => c.Cause.TagList, "Choose tags:")
+    <br />
+    for (int i = 0; i < Model.Cause.TagList.Count(); i++)
+    {
+        @Html.HiddenFor(b => b.Cause.TagList[i].Id)
+        @Html.HiddenFor(b => b.Cause.TagList[i].Name)
+        @Html.CheckBoxFor(b => b.Cause.TagList[i].IsChecked)
+        @Html.DisplayFor(b => b.Cause.TagList[i].Name)
+        <br />
+    }
+    <br />
+    <p>Contact info</p>
+    <br />
+    @Html.LabelFor(c => c.ContactInfo.Name)
+    @Html.TextBoxFor(c => c.ContactInfo.Name, null, new { placeholder = "Type in the name of the contact info", @class = "form-control" })
+    @Html.ValidationMessageFor(c => c.ContactInfo.Name, "", new { @class = "text-danger" })
+    <br />
+    @Html.LabelFor(c => c.ContactInfo.PhoneNumber)
+    @Html.TextBoxFor(c => c.ContactInfo.PhoneNumber, null, new { placeholder = "Type in the phone number of the contact info", @class = "form-control" })
+    @Html.ValidationMessageFor(c => c.ContactInfo.PhoneNumber, "", new { @class = "text-danger" })
+    <br />
+    <button class="btn btn-primary" type="submit">Add</button>
+}
+
+
+

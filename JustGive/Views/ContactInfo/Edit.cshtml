@@ -1,0 +1,22 @@
+﻿@model JustGive.Models.ContactInfo
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+@using (Html.BeginForm(actionName: "Edit", controllerName: "ContactInfo", method: FormMethod.Post))
+{
+    @Html.HttpMethodOverride(HttpVerbs.Put)
+    @Html.HiddenFor(ct => ct.Id)
+    <br />
+    @Html.Label("Name", "Name:")
+    @Html.EditorFor(ct => ct.Name, new { htmlAttributes = new { @class = "form-control" } })
+    @Html.ValidationMessageFor(ct => ct.Name, "", new { @class = "text-danger" })
+    <br />
+    @Html.Label("PhoneNumber", "Phone number:")
+    @Html.EditorFor(ct => ct.PhoneNumber, new { htmlAttributes = new { @class = "form-control" } })
+    @Html.ValidationMessageFor(ct => ct.PhoneNumber, "", new { @class = "text-danger" })
+    <br />
+    <button class=" btn btn-primary" type="submit">Update</button>
+}
+

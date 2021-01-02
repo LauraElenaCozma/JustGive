@@ -1,0 +1,26 @@
+﻿@model List<JustGive.Models.Location>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>@ViewBag.Title</h2>
+@foreach(var location in Model)
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @Html.Label("City", "City:")
+            <p>@location.City</p>
+            @Html.Label("Country", "Country:")
+            <p>@location.Country</p>
+            <br />
+            @using (Html.BeginForm(actionName: "Details", controllerName: "Location", method: FormMethod.Get, routeValues: new { id = location.LocationId }))
+            {
+                <button class="btn btn-primary">Details</button>
+            }
+        </div>
+    </div>
+    
+}
+
+<br />
+@Html.ActionLink("Add new Location", "New")

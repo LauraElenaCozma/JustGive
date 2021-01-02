@@ -1,0 +1,56 @@
+﻿@model JustGive.Models.Cause
+@{
+    ViewBag.Title = "Cause Details";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@Html.LabelFor(c => c.Title)
+<br />
+<p>@Model.Title</p>
+<br />
+@Html.LabelFor(c => c.Description)
+<br />
+<p>@Model.Description</p>
+@if (Model.Tags.Count > 0)
+{
+    @Html.Label("Tags", "Tags:")
+    <br />
+    <ul>
+        @foreach (var tag in Model.Tags)
+        {
+            <li> @tag.Name</li>
+        }
+    </ul>
+}
+<br />
+@if (@Model.Location != null)
+{
+    @Html.LabelFor(c => c.Location)
+    <br />
+    @Html.LabelFor(c => c.Location.City)
+    <p>@Model.Location.City</p>
+    @Html.LabelFor(c => c.Location.Country)
+    <p>@Model.Location.Country</p>
+}
+
+@Html.LabelFor(c => c.ContactInfo)
+<br />
+@Html.LabelFor(c => c.ContactInfo.Name)
+<p>@Model.ContactInfo.Name</p>
+<br />
+@Html.LabelFor(c => c.ContactInfo.PhoneNumber)
+<p>@Model.ContactInfo.PhoneNumber</p>
+<br />
+@using (Html.BeginForm(actionName: "Edit", controllerName: "Cause", method: FormMethod.Get, routeValues: new { id = Model.CauseId }))
+{
+    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Edit</button>
+}
+<br />
+@using (Html.BeginForm(actionName: "Delete", controllerName: "Cause", method: FormMethod.Post, routeValues: new { id = Model.CauseId }))
+{
+    @Html.HttpMethodOverride(HttpVerbs.Delete)
+    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Delete</button>
+}
+
+

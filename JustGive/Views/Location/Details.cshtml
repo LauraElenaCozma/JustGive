@@ -1,0 +1,27 @@
+﻿@model JustGive.Models.Location
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>@ViewBag.Title</h2>
+@Html.LabelFor(location => location.LocationId)
+<p>@Model.LocationId</p>
+<br />
+@Html.LabelFor(location => location.City)
+<p>@Model.City</p>
+<br />
+@Html.LabelFor(location => location.Country)
+<p>@Model.Country</p>
+
+@using (Html.BeginForm(actionName: "Edit", controllerName: "Location", method: FormMethod.Get, routeValues: new { id = Model.LocationId }))
+{
+    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Edit</button>
+}
+<br />
+<br />
+@using (Html.BeginForm(actionName: "Delete", controllerName: "Location", method: FormMethod.Post, routeValues: new { id = Model.LocationId }))
+{
+    @Html.HttpMethodOverride(HttpVerbs.Delete)
+    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Delete</button>
+}
+

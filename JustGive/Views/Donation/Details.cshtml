@@ -1,0 +1,47 @@
+﻿@model JustGive.Models.Donation
+@{
+    ViewBag.Title = "Donation Details";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@Html.LabelFor(d => d.Title)
+<br />
+<p>@Model.Title</p>
+<br />
+@Html.LabelFor(d => d.Description)
+<br />
+<p>@Model.Description</p>
+@if (Model.Tags.Count > 0)
+{
+    @Html.Label("Tags", "Tags:")
+    <br />
+    <ul>
+        @foreach (var tag in Model.Tags)
+        {
+            <li> @tag.Name</li>
+        }
+    </ul>
+}
+<br />
+@if (@Model.Location != null)
+{
+    @Html.LabelFor(d => d.Location)
+    <br />
+    @Html.LabelFor(d => d.Location.City)
+    <p>@Model.Location.City</p>
+    @Html.LabelFor(d => d.Location.Country)
+    <p>@Model.Location.Country</p>
+}
+@using (Html.BeginForm(actionName: "Edit", controllerName: "Donation", method: FormMethod.Get, routeValues: new { id = Model.DonationId }))
+{
+    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Edit</button>
+}
+<br />
+@using (Html.BeginForm(actionName: "Delete", controllerName: "Donation", method: FormMethod.Post, routeValues: new { id = Model.DonationId }))
+{
+    @Html.HttpMethodOverride(HttpVerbs.Delete)
+    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Delete</button>
+}
+
+

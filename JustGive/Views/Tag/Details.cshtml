@@ -1,0 +1,25 @@
+﻿@model JustGive.Models.Tag
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>@ViewBag.Title</h2>
+@Html.LabelFor(t => t.TagId)
+<br />
+<p>@Model.TagId</p>
+<br />
+@Html.LabelFor(t => t.Name)
+<br />
+<p>@Model.Name</p>
+<br />
+@using (Html.BeginForm(actionName: "Edit", controllerName: "Tag", method: FormMethod.Get, routeValues: new { id = Model.TagId }))
+{
+    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Edit</button>
+}
+
+@using (Html.BeginForm(actionName: "Delete", controllerName: "Tag", method: FormMethod.Post, routeValues: new { id = Model.TagId }))
+{
+    @Html.HttpMethodOverride(HttpVerbs.Delete)
+    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Delete</button>
+}
+

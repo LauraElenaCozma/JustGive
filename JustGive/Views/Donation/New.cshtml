@@ -1,0 +1,40 @@
+﻿@model JustGive.Models.Donation
+@{
+    ViewBag.Title = "New donation";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm(actionName: "New", controllerName: "Donation", method: FormMethod.Post))
+{
+    @Html.LabelFor(d => d.Title)
+    <br />
+    @Html.TextBoxFor(d => d.Title, null,
+                    new { placeholder = "Type in the donation's title", @class = "form-control" })
+    @Html.ValidationMessageFor(d => d.Title, "", new { @class = "text-danger" })
+    <br />
+
+    @Html.LabelFor(d => d.Description)
+    @Html.TextAreaFor(d => d.Description,
+                    new { placeholder = "Type in the donation's summary", @class = "form-control", @rows = "10" })
+    @Html.ValidationMessageFor(d => d.Description, "", new { @class = "text-danger" })
+    <br />
+    @Html.Label("Location", "Location:")
+    <br />
+    @Html.DropDownListFor(d => d.LocationId, new SelectList(Model.LocationList, "Value", "Text"), "Choose a location", new { @class = "form-control" })
+    @Html.ValidationMessageFor(d => d.LocationId, "", new { @class = "text-danger" })
+    <br />
+    @Html.LabelFor(b => b.TagList, "Choose tags:")
+    <br />
+    for (int i = 0; i < Model.TagList.Count(); i++)
+    {
+        @Html.HiddenFor(b => b.TagList[i].Id)
+        @Html.HiddenFor(b => b.TagList[i].Name)
+        @Html.CheckBoxFor(b => b.TagList[i].IsChecked)
+        @Html.DisplayFor(b => b.TagList[i].Name)
+        <br />
+    }
+    <br />
+    <button class="btn btn-primary" type="submit">Add</button>
+}
+

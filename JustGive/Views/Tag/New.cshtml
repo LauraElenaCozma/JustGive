@@ -1,0 +1,19 @@
+﻿@model JustGive.Models.Tag 
+@{
+    ViewBag.Title = "New";
+}
+
+<h2>@ViewBag.Title</h2>
+@using (Html.BeginForm(actionName: "New", controllerName: "Tag", method: FormMethod.Post))
+{
+    @Html.LabelFor(t => t.Name)
+    <br />
+    @Html.TextBoxFor(t => t.Name, null,
+                    new { placeholder = "Type in the tag's name", @class = "form-control" })
+    @Html.ValidationMessageFor(t => t.Name, "", new { @class = "text-danger"})
+
+    <br>
+
+    <button class="btn btn-primary" type="submit">Create tag</button>
+}
+

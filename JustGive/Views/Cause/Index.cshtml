@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "Causes";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@foreach (var cause in ViewBag.Causes)
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @Html.Label("Title", "Title:")
+            <br />
+            <p>@cause.Title</p>
+
+            @Html.Label("Description", "Description:")
+            <br />
+            <p>@cause.Description</p>
+            @using (Html.BeginForm(actionName: "Details", controllerName: "Cause",
+                    method: FormMethod.Get, routeValues: new { id = cause.CauseId }))
+            {
+                <button class=" btn btn-primary">Details</button>
+            }
+        </div>
+    </div>
+}
+
+@Html.ActionLink("Add cause", "New")
+
+
