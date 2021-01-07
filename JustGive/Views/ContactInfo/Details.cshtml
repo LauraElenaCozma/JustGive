@@ -10,14 +10,17 @@
 @Html.Label("PhoneNumber", "Phone Number:")
 <p>@Model.PhoneNumber</p>
 <br />
-@using (Html.BeginForm(actionName: "Edit", controllerName: "ContactInfo", method: FormMethod.Get, routeValues: new { id = Model.Id }))
-{
-    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Edit</button>
-}
+@Html.Label("BirthDate", "Birth Date:")
+<p>@Model.BirthDate</p>
 <br />
-<br />
-@using (Html.BeginForm(actionName: "Delete", controllerName: "ContactInfo", method: FormMethod.Post, routeValues: new { id = Model.Id }))
+
+@if (User.IsInRole("Admin"))
 {
-    @Html.HttpMethodOverride(HttpVerbs.Delete)
-    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Delete</button>
+    using (Html.BeginForm(actionName: "Edit", controllerName: "ContactInfo", method: FormMethod.Get, routeValues: new { id = Model.Id }))
+    {
+        <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Edit</button>
+    }
+    <br />
 }
+
+<br />

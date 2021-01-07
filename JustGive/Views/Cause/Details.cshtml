@@ -42,15 +42,22 @@
 @Html.LabelFor(c => c.ContactInfo.PhoneNumber)
 <p>@Model.ContactInfo.PhoneNumber</p>
 <br />
-@using (Html.BeginForm(actionName: "Edit", controllerName: "Cause", method: FormMethod.Get, routeValues: new { id = Model.CauseId }))
+@Html.LabelFor(c => c.ContactInfo.BirthDate)
+<p>@Model.ContactInfo.BirthDate.ToShortDateString()</p>
+@if (ViewBag.UserId == Model.UserId || User.IsInRole("Admin"))
 {
-    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Edit</button>
+    <br />
+    using (Html.BeginForm(actionName: "Edit", controllerName: "Cause", method: FormMethod.Get, routeValues: new { id = Model.CauseId }))
+    {
+        <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Edit</button>
+    }
+    <br />
+    <br />
+    using (Html.BeginForm(actionName: "Delete", controllerName: "Cause", method: FormMethod.Post, routeValues: new { id = Model.CauseId }))
+    {
+        @Html.HttpMethodOverride(HttpVerbs.Delete)
+        <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Delete</button>
+    }
 }
 <br />
-@using (Html.BeginForm(actionName: "Delete", controllerName: "Cause", method: FormMethod.Post, routeValues: new { id = Model.CauseId }))
-{
-    @Html.HttpMethodOverride(HttpVerbs.Delete)
-    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Delete</button>
-}
-
 

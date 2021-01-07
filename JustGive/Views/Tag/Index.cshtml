@@ -6,19 +6,26 @@
 <h2>@ViewBag.Title</h2>
 @foreach (var tag in Model)
 {
-<div class="panel panel-default">
-    <div class="panel-body">
-        @Html.Label("Name", "Name:")
-        <p>@tag.Name</p>
-        @using (Html.BeginForm(actionName: "Details", controllerName: "Tag",
-                    method: FormMethod.Get, routeValues: new { id = tag.TagId }))
-        {
-            <button class=" btn btn-primary">Details</button>
-        }
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @Html.Label("Name", "Name:")
+            <p>@tag.Name</p>
+            @if (User.IsInRole("Admin"))
+            {
+                using (Html.BeginForm(actionName: "Details", controllerName: "Tag",
+                        method: FormMethod.Get, routeValues: new { id = tag.TagId }))
+                {
+                    <button class=" btn btn-primary">Details</button>
+                }
+            }
+
+        </div>
     </div>
-</div>
 }
 
 
-@Html.ActionLink("Add new tag", "New")
+@using (Html.BeginForm(actionName: "New", controllerName: "Tag", method: FormMethod.Get))
+{
+    <button class="btn btn-primary">Add new Tag</button>
+}
 

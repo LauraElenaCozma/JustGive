@@ -18,32 +18,6 @@ namespace JustGive.Controllers
             return View();
         }
 
-        [HttpGet] 
-        public ActionResult New()
-        {
-            ContactInfo contactInfo = new ContactInfo();
-            return View(contactInfo);
-        }
-
-        [HttpPost]
-        public ActionResult New(ContactInfo contactInfo)
-        {
-            try
-            {
-                if(ModelState.IsValid)
-                {
-                    db.ContactInfos.Add(contactInfo);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-                return View(contactInfo);
-            }
-            catch(Exception e)
-            {
-                return View(contactInfo);
-            }
-        }
-
         [HttpGet]
         public ActionResult Details(int? id)
         {
@@ -60,6 +34,7 @@ namespace JustGive.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles ="Admin")]
         public ActionResult Edit(int? id)
         {
             if (id.HasValue)
@@ -67,7 +42,10 @@ namespace JustGive.Controllers
                 ContactInfo contactInfo = db.ContactInfos.Find(id);
                 if (contactInfo != null)
                 {
-                    return View(contactInfo);
+                    if(User.IsInRole("Admin"))
+                    {
+                        return View(contactInfo);
+                    }
                 }
                 return HttpNotFound("Couldn't find the contact info's id " + id.ToString());
             }
@@ -75,6 +53,7 @@ namespace JustGive.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles ="Admin")]
         public ActionResult Edit(int id, ContactInfo contactInfoReq)
         {
             try
@@ -82,8 +61,7 @@ namespace JustGive.Controllers
                 if (ModelState.IsValid)
                 {
                     ContactInfo contactInfo = db.ContactInfos.SingleOrDefault(ct => ct.Id.Equals(id));
-                    //TODO: tryupdatemodel!!!!!!!!!!!!!!!!!
-                    if(contactInfo != null)
+                    if(TryUpdateModel(contactInfo))
                     {
                         contactInfo.Name = contactInfoReq.Name;
                         contactInfo.PhoneNumber = contactInfoReq.PhoneNumber;
@@ -98,22 +76,6 @@ namespace JustGive.Controllers
             {
                 return View(contactInfoReq);
             }
-        }
-        [HttpDelete]
-        public ActionResult Delete(int? id)
-        {
-            if(id.HasValue)
-            {
-                ContactInfo contactInfo = db.ContactInfos.Find(id);
-                if(contactInfo != null)
-                {
-                    db.ContactInfos.Remove(contactInfo);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-                return HttpNotFound("Couldn't find the contact info's id " + id.ToString());
-            }
-            return HttpNotFound("Missing contact info's id parameter!");
         }
     }
 }

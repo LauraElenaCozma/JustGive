@@ -2,8 +2,14 @@
 @{
     ViewBag.Title = "Donation Details";
 }
-
-<h2>@ViewBag.Title</h2>
+@if (Model.IsDonated == true)
+{
+    <h2>@ViewBag.Title - <em>Donated</em></h2>
+}
+else
+{
+    <h2>@ViewBag.Title</h2>
+}
 
 @Html.LabelFor(d => d.Title)
 <br />
@@ -33,15 +39,31 @@
     @Html.LabelFor(d => d.Location.Country)
     <p>@Model.Location.Country</p>
 }
-@using (Html.BeginForm(actionName: "Edit", controllerName: "Donation", method: FormMethod.Get, routeValues: new { id = Model.DonationId }))
+
+<p>Created by @Model.User.UserName</p>
+
+@if (ViewBag.UserId == Model.UserId || User.IsInRole("Admin"))
 {
-    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Edit</button>
+    <br />
+    using (Html.BeginForm(actionName: "Edit", controllerName: "Donation", method: FormMethod.Get, routeValues: new { id = Model.DonationId }))
+    {
+        <button class="btn btn-primary col-lg-2" style="margin-right:5px" type="submit">Edit</button>
+    }
+    <br />
+    <br />
+    using (Html.BeginForm(actionName: "Delete", controllerName: "Donation", method: FormMethod.Post, routeValues: new { id = Model.DonationId }))
+    {
+        @Html.HttpMethodOverride(HttpVerbs.Delete)
+        <button class="btn btn-primary col-lg-2" style="margin-right:5px" type="submit">Delete</button>
+    }
+    <br />
+    if (Model.IsDonated == false)
+    {
+        <br />
+        using (Html.BeginForm(actionName: "AddToCause", controllerName: "Donation", method: FormMethod.Get, routeValues: new { id = Model.DonationId }))
+        {
+            <button class="btn btn-primary col-lg-2" style="margin-right:5px" type="submit">Donate to a cause</button>
+        }
+    }
 }
 <br />
-@using (Html.BeginForm(actionName: "Delete", controllerName: "Donation", method: FormMethod.Post, routeValues: new { id = Model.DonationId }))
-{
-    @Html.HttpMethodOverride(HttpVerbs.Delete)
-    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Delete</button>
-}
-
-

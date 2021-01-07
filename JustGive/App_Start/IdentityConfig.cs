@@ -84,6 +84,7 @@ namespace JustGive
                 manager.UserTokenProvider = 
                     new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
+            //var roleStore = new RoleStore<IdentityRole>(context.Get<ApplicationDbContext>());
             return manager;
         }
     }

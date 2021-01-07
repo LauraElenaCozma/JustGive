@@ -1,40 +1,60 @@
 ﻿@model JustGive.Models.Donation
 @{
-    ViewBag.Title = "New donation";
+    ViewBag.Title = "Add Donation";
 }
 
 <h2>@ViewBag.Title</h2>
+<br />
+<div class="row">
+    <div class="col-md-4">
+        @using (Html.BeginForm(actionName: "New", controllerName: "Donation", method: FormMethod.Post))
+        {
+            @Html.LabelFor(d => d.Title)
+            <br />
+            @Html.TextBoxFor(d => d.Title, null,
+                            new { placeholder = "Type in the donation's title", @class = "form-control" })
+            @Html.ValidationMessageFor(d => d.Title, "", new { @class = "text-danger" })
+            <br />
 
-@using (Html.BeginForm(actionName: "New", controllerName: "Donation", method: FormMethod.Post))
-{
-    @Html.LabelFor(d => d.Title)
-    <br />
-    @Html.TextBoxFor(d => d.Title, null,
-                    new { placeholder = "Type in the donation's title", @class = "form-control" })
-    @Html.ValidationMessageFor(d => d.Title, "", new { @class = "text-danger" })
-    <br />
+            @Html.LabelFor(d => d.Description)
+            @Html.TextAreaFor(d => d.Description,
+                            new { placeholder = "Type in the donation's summary", @class = "form-control", @rows = "10" })
+            @Html.ValidationMessageFor(d => d.Description, "", new { @class = "text-danger" })
+            <br />
+            @Html.Label("Location", "Location:")
+            <br />
+            @Html.DropDownListFor(d => d.LocationId, new SelectList(Model.LocationList, "Value", "Text"), "Choose a location", new { @class = "form-control" })
+            @Html.ValidationMessageFor(d => d.LocationId, "", new { @class = "text-danger" })
 
-    @Html.LabelFor(d => d.Description)
-    @Html.TextAreaFor(d => d.Description,
-                    new { placeholder = "Type in the donation's summary", @class = "form-control", @rows = "10" })
-    @Html.ValidationMessageFor(d => d.Description, "", new { @class = "text-danger" })
-    <br />
-    @Html.Label("Location", "Location:")
-    <br />
-    @Html.DropDownListFor(d => d.LocationId, new SelectList(Model.LocationList, "Value", "Text"), "Choose a location", new { @class = "form-control" })
-    @Html.ValidationMessageFor(d => d.LocationId, "", new { @class = "text-danger" })
-    <br />
-    @Html.LabelFor(b => b.TagList, "Choose tags:")
-    <br />
-    for (int i = 0; i < Model.TagList.Count(); i++)
-    {
-        @Html.HiddenFor(b => b.TagList[i].Id)
-        @Html.HiddenFor(b => b.TagList[i].Name)
-        @Html.CheckBoxFor(b => b.TagList[i].IsChecked)
-        @Html.DisplayFor(b => b.TagList[i].Name)
-        <br />
-    }
-    <br />
-    <button class="btn btn-primary" type="submit">Add</button>
-}
+            <br />
+            @Html.LabelFor(b => b.TagList, "Choose tags:")
+            <br />
+            for (int i = 0; i < Model.TagList.Count(); i++)
+            {
+                @Html.HiddenFor(b => b.TagList[i].Id)
+                @Html.HiddenFor(b => b.TagList[i].Name)
+                @Html.CheckBoxFor(b => b.TagList[i].IsChecked)
+                @Html.DisplayFor(b => b.TagList[i].Name)
+                <br />
+            }
+            <br />
+            <button class="btn btn-primary" type="submit">Add</button>
+        }
+
+    </div>
+    <div class="col-md-4" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0; margin: auto;">
+        <div style="padding-top: 490px;margin: auto; width: 50%;">
+            @using (Html.BeginForm(actionName: "New", controllerName: "Location", method: FormMethod.Get))
+            {
+                <button class="btn btn-primary" type="submit">Add new location</button>
+            }
+        </div>
+        <div style="padding-top: 70px;margin: auto; width: 50%;">
+            @using (Html.BeginForm(actionName: "New", controllerName: "Tag", method: FormMethod.Get))
+            {
+                <button class="btn btn-primary" type="submit">Add new tag</button>
+            }
+        </div>
+    </div>
+</div>
 

@@ -1,52 +1,79 @@
 ﻿@model JustGive.Models.CauseContactViewModel
 @{
-    ViewBag.Title = "New";
+    ViewBag.Title = "Add Cause";
 }
 
 <h2>@ViewBag.Title</h2>
+<br />
+<div class="row">
+    <div class="col-md-4">
+        @using (Html.BeginForm(actionName: "New", controllerName: "Cause", method: FormMethod.Post))
+        {
+            @Html.LabelFor(c => c.Cause.Title)
+            <br />
+            @Html.TextBoxFor(c => c.Cause.Title, null,
+                            new { placeholder = "Type in the cause's title", @class = "form-control" })
+            @Html.ValidationMessageFor(c => c.Cause.Title, "", new { @class = "text-danger" })
+            <br />
 
-@using (Html.BeginForm(actionName: "New", controllerName: "Cause", method: FormMethod.Post))
-{
-    @Html.LabelFor(c => c.Cause.Title)
-    <br />
-    @Html.TextBoxFor(c => c.Cause.Title, null,
-                    new { placeholder = "Type in the cause's title", @class = "form-control" })
-    @Html.ValidationMessageFor(c => c.Cause.Title, "", new { @class = "text-danger" })
-    <br />
-
-    @Html.LabelFor(c => c.Cause.Description)
-    @Html.TextAreaFor(c => c.Cause.Description,
-                    new { placeholder = "Type in the cause's summary", @class = "form-control", @rows = "10" })
-    @Html.ValidationMessageFor(c => c.Cause.Description, "", new { @class = "text-danger" })
-    <br />
-    @Html.LabelFor(c => c.Cause.Location)
-    <br />
-    @Html.DropDownListFor(c => c.Cause.LocationId, new SelectList(Model.Cause.LocationList, "Value", "Text"), "Choose a location", new { @class = "form-control" })
-    @Html.ValidationMessageFor(c => c.Cause.LocationId, "", new { @class = "text-danger" })
-    <br />
-    @Html.LabelFor(c => c.Cause.TagList, "Choose tags:")
-    <br />
-    for (int i = 0; i < Model.Cause.TagList.Count(); i++)
-    {
-        @Html.HiddenFor(b => b.Cause.TagList[i].Id)
-        @Html.HiddenFor(b => b.Cause.TagList[i].Name)
-        @Html.CheckBoxFor(b => b.Cause.TagList[i].IsChecked)
-        @Html.DisplayFor(b => b.Cause.TagList[i].Name)
-        <br />
-    }
-    <br />
-    <p>Contact info</p>
-    <br />
-    @Html.LabelFor(c => c.ContactInfo.Name)
-    @Html.TextBoxFor(c => c.ContactInfo.Name, null, new { placeholder = "Type in the name of the contact info", @class = "form-control" })
-    @Html.ValidationMessageFor(c => c.ContactInfo.Name, "", new { @class = "text-danger" })
-    <br />
-    @Html.LabelFor(c => c.ContactInfo.PhoneNumber)
-    @Html.TextBoxFor(c => c.ContactInfo.PhoneNumber, null, new { placeholder = "Type in the phone number of the contact info", @class = "form-control" })
-    @Html.ValidationMessageFor(c => c.ContactInfo.PhoneNumber, "", new { @class = "text-danger" })
-    <br />
-    <button class="btn btn-primary" type="submit">Add</button>
-}
-
-
+            @Html.LabelFor(c => c.Cause.Description)
+            @Html.TextAreaFor(c => c.Cause.Description,
+                            new { placeholder = "Type in the cause's summary", @class = "form-control", @rows = "10" })
+            @Html.ValidationMessageFor(c => c.Cause.Description, "", new { @class = "text-danger" })
+            <br />
+            @Html.LabelFor(c => c.Cause.Location)
+            <br />
+            @Html.DropDownListFor(c => c.Cause.LocationId, new SelectList(Model.Cause.LocationList, "Value", "Text"), "Choose a location", new { @class = "form-control" })
+            @Html.ValidationMessageFor(c => c.Cause.LocationId, "", new { @class = "text-danger" })
+            <br />
+            @Html.LabelFor(c => c.Cause.TagList, "Choose tags:")
+            <br />
+            for (int i = 0; i < Model.Cause.TagList.Count(); i++)
+            {
+                @Html.HiddenFor(b => b.Cause.TagList[i].Id)
+                @Html.HiddenFor(b => b.Cause.TagList[i].Name)
+                @Html.CheckBoxFor(b => b.Cause.TagList[i].IsChecked)
+                @Html.DisplayFor(b => b.Cause.TagList[i].Name)
+                <br />
+            }
+            <br />
+            @Html.LabelFor(c => c.ContactInfo)
+            <br />
+            @Html.Label("Name", "Name:")
+            @Html.TextBoxFor(c => c.ContactInfo.Name, null, new { placeholder = "Type in the name of the contact info", @class = "form-control" })
+            @Html.ValidationMessageFor(c => c.ContactInfo.Name, "", new { @class = "text-danger" })
+            <br />
+            @Html.Label("PhoneNumber", "Phone Number: ")
+            @Html.TextBoxFor(c => c.ContactInfo.PhoneNumber, null, new { placeholder = "Type in the phone number of the contact info", @class = "form-control" })
+            @Html.ValidationMessageFor(c => c.ContactInfo.PhoneNumber, "", new { @class = "text-danger" })
+            <br />
+            @Html.Label("BirthDate", "Birth Date: ")
+            <br />
+            @Html.TextBoxFor(c => c.ContactInfo.BirthDate, null, new
+                       {
+                           @class = "form-control",
+                           @type = "datetime-local"
+                       })
+            <br />
+            @Html.ValidationMessageFor(c => c.ContactInfo.BirthDate, "", new { @class = "text-danger" })
+            <br />
+            <br />
+            <button class="btn btn-primary" type="submit">Add</button>
+        }
+    </div>
+    <div class="col-md-4" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0; margin: auto;">
+        <div style="padding-top: 490px;margin: auto; width: 50%;">
+            @using (Html.BeginForm(actionName: "New", controllerName: "Location", method: FormMethod.Get))
+            {
+                <button class="btn btn-primary" type="submit">Add new location</button>
+            }
+        </div>
+        <div style="padding-top: 70px;margin: auto; width: 50%;">
+            @using (Html.BeginForm(actionName: "New", controllerName: "Tag", method: FormMethod.Get))
+            {
+                <button class="btn btn-primary" type="submit">Add new tag</button>
+            }
+        </div>
+    </div>
+</div>
 

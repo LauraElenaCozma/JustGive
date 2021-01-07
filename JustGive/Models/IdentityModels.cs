@@ -44,6 +44,29 @@ namespace JustGive.Models
     { // custom initializer
         protected override void Seed(ApplicationDbContext ctx)
         {
+            var roleManager = new RoleManager<IdentityRole>(
+            new RoleStore<IdentityRole>(ctx));
+            var userManager = new UserManager<ApplicationUser>(
+            new UserStore<ApplicationUser>(ctx));
+
+            if (!roleManager.RoleExists("Donator"))
+            {
+                // adaugati rolul specific aplicatiei voastre
+                var role = new IdentityRole();
+                role.Name = "Donator";
+                roleManager.Create(role);
+                // se adauga utilizatorul
+                var user = new ApplicationUser();
+                user.UserName = "cozmalaura23@gmail.com";
+                user.Email = "cozmalaura23@gmail.com";
+                var donatorCreated = userManager.Create(user, "DonatorJG2021!");
+                if (donatorCreated.Succeeded)
+                {
+                    userManager.AddToRole(user.Id, "Donator");
+                }
+            }
+            var userId = ctx.Users.SingleOrDefaultAsync(u => u.UserName.Equals("cozmalaura23@gmail.com")).Result.Id;
+
             Location location1 = new Location
             {
                 City = "Bucuresti",
@@ -75,8 +98,8 @@ namespace JustGive.Models
             ctx.Tags.Add(tag4);
             ctx.Tags.Add(tag5);
 
-            ContactInfo ctInfo1 = new ContactInfo { Name = "Stefania Iftodi", PhoneNumber = "0723941889" };
-            ContactInfo ctInfo2 = new ContactInfo { Name = "Mihai Andriciuc", PhoneNumber = "0749921308" };
+            ContactInfo ctInfo1 = new ContactInfo { Name = "Stefania Iftodi", PhoneNumber = "0723941889", BirthDate = new System.DateTime(2010, 9, 13) };
+            ContactInfo ctInfo2 = new ContactInfo { Name = "Mihai Andriciuc", PhoneNumber = "0749921308", BirthDate = new System.DateTime(2014, 12, 3)};
             //TODO: delete this or not?
             //ContactInfo ctInfo3 = new ContactInfo { Name = "Mirela Oniciuc", PhoneNumber = "0233940017" };
             ctx.ContactInfos.Add(ctInfo1);
@@ -93,7 +116,8 @@ namespace JustGive.Models
                 {
                     tag1,
                     tag2
-                }
+                },
+                UserId = userId
             };
             Donation donation2 = new Donation
             {
@@ -106,7 +130,8 @@ namespace JustGive.Models
                     tag3,
                     tag4
 
-                }
+                },
+                UserId = userId
             };
             Donation donation3 = new Donation
             {
@@ -119,7 +144,8 @@ namespace JustGive.Models
                     tag3,
                     tag4
 
-                }
+                },
+                UserId = userId
             };
             ctx.Donations.Add(donation1);
             ctx.Donations.Add(donation2);
@@ -138,7 +164,8 @@ namespace JustGive.Models
                     tag3,
                     tag4
                 },
-                ContactInfo = ctInfo1
+                ContactInfo = ctInfo1,
+                UserId = userId
             });
             ctx.Causes.Add(new Cause
             {
@@ -150,7 +177,8 @@ namespace JustGive.Models
                 {
                     tag5
                 },
-                ContactInfo = ctInfo2
+                ContactInfo = ctInfo2,
+                UserId = userId
             });
 
             ctx.SaveChanges();

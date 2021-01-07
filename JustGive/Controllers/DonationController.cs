@@ -1,18 +1,24 @@
 ﻿using JustGive.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace JustGive.Controllers
 {
+    [Authorize]
     public class DonationController : Controller
     {
         private Models.ApplicationDbContext db = new ApplicationDbContext();
 
+
         // GET: Donation
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Index()
         {
             List<Donation> donations = db.Donations.Include("Tags").ToList();
@@ -22,14 +28,16 @@ namespace JustGive.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Details(int? id)
         {
             if (id.HasValue)
             {
-                Donation donation = db.Donations.Include("Location").SingleOrDefault(d => d.DonationId == id);
+                Donation donation = db.Donations.Include("Location").Include("User").SingleOrDefault(d => d.DonationId == id);
 
                 if (donation != null)
                 {
+                    ViewBag.UserId = User.Identity.GetUserId();
                     return View(donation);
                 }
                 return HttpNotFound("Couldn't find the donation id " + id.ToString());
@@ -38,6 +46,7 @@ namespace JustGive.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Donator, Admin")]
         public ActionResult New()
         {
             Donation donation = new Donation();
@@ -48,6 +57,7 @@ namespace JustGive.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Donator, Admin")]
         public ActionResult New(Donation donation)
         {
             //save the selected tags
@@ -65,6 +75,7 @@ namespace JustGive.Controllers
                         Tag tag = db.Tags.Find(selectedTags[i].Id);
                         donation.Tags.Add(tag);
                     }
+                    donation.UserId = User.Identity.GetUserId();
                     db.Donations.Add(donation);
                     db.SaveChanges();
                     return RedirectToAction("Index");
@@ -78,6 +89,7 @@ namespace JustGive.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Donator,Admin")]
         public ActionResult Edit(int? id)
         {
             if(id.HasValue)
@@ -85,14 +97,18 @@ namespace JustGive.Controllers
                 Donation donation = db.Donations.Find(id);
                 if (donation != null)
                 {
-                    donation.LocationList = getAllLocations();
-                    donation.TagList = GetAllTags();
-                    foreach(Tag tagChecked in donation.Tags)
+                    if(User.Identity.GetUserId() == donation.UserId || User.IsInRole("Admin"))
                     {
-                        //update the checkbox list
-                        donation.TagList.FirstOrDefault(t => t.Id == tagChecked.TagId).IsChecked = true;
+                        donation.LocationList = getAllLocations();
+                        donation.TagList = GetAllTags();
+                        foreach (Tag tagChecked in donation.Tags)
+                        {
+                            //update the checkbox list
+                            donation.TagList.FirstOrDefault(t => t.Id == tagChecked.TagId).IsChecked = true;
+                        }
+                        return View(donation);
                     }
-                    return View(donation);
+                    return RedirectToAction("Index");
                 }
                 return HttpNotFound("Couldn't find the donation id " + id.ToString());
             }
@@ -100,10 +116,12 @@ namespace JustGive.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Donator,Admin")]
         public ActionResult Edit(int id, Donation donationReq)
         {
             //save the tags that where selected into the form
             var selectedTags = donationReq.TagList.Where(t => t.IsChecked).ToList();
+            donationReq.LocationList = getAllLocations();
             try
             {
                 if(ModelState.IsValid)
@@ -137,6 +155,7 @@ namespace JustGive.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Donator,Admin")]
         public ActionResult Delete(int? id)
         {
             if(id.HasValue)
@@ -145,13 +164,83 @@ namespace JustGive.Controllers
 
                 if (donation != null)
                 {
-                    db.Donations.Remove(donation);
-                    db.SaveChanges();
+                    if (User.Identity.GetUserId() == donation.UserId || User.IsInRole("Admin"))
+                    {
+                        db.Donations.Remove(donation);
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
                     return RedirectToAction("Index");
                 }
                 return HttpNotFound("Couldn't find the donation id " + id.ToString());
             }
             return HttpNotFound("Missing donation id!");
+        }
+
+        [HttpGet]
+        [Authorize(Roles= "Donator,Admin")]
+        public ActionResult AddToCause(int? id)
+        {
+            if (id.HasValue)
+            {
+                Donation donation = db.Donations.Include("Location").Include("User").SingleOrDefault(d => d.DonationId == id);
+
+                if (donation != null)
+                {
+                    if (User.Identity.GetUserId() == donation.UserId || User.IsInRole("Admin"))
+                    {
+                        List<Cause> causes = db.Causes.Include("ContactInfo").ToList();
+                        ViewBag.Causes = causes;
+                        ViewBag.donationId = donation.DonationId;
+                        return View();
+                    }
+                    return RedirectToAction("Index");
+                }
+                return HttpNotFound("Couldn't find the donation id " + id.ToString());
+            }
+            return HttpNotFound("Missing donation id!");
+        }
+
+        [Authorize(Roles = "Admin,Donator")]
+
+
+        [HttpPut]
+        public ActionResult ChooseCause(int? donationId, int? causeId)
+        {
+
+            if (donationId.HasValue)
+            {
+                Donation donation = db.Donations.Find(donationId);
+                if (donation != null)
+                {
+                    if (causeId.HasValue)
+                    {
+                        Cause cause = db.Causes.Find(causeId);
+                        if (cause != null)
+                        {
+                            if (TryUpdateModel(donation))
+                            {
+                                donation.IsDonated = true;
+                                donation.Cause = cause;
+
+                                if (TryUpdateModel(cause))
+                                {
+                                    cause.Donations.Add(donation);
+                                    db.SaveChanges();
+                                    return RedirectToAction("Index");
+                                }
+                                return HttpNotFound("The cause model couldn't be updated");
+                            }
+                            return HttpNotFound("The donation model couldn't be updated");
+                        }
+                        return HttpNotFound("Couldn't find the cause id " + causeId.ToString());
+                    }
+                    return HttpNotFound("Missing id parameter for cause");
+                }
+                return HttpNotFound("Couldn't find the donation id " + donationId.ToString());
+            }
+            return HttpNotFound("Missing id parameter for donation");
+
         }
 
         [NonAction]

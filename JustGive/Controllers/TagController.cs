@@ -7,6 +7,7 @@ using System.Web.Mvc;
 
 namespace JustGive.Controllers
 {
+    [Authorize]
     public class TagController : Controller
     {
         // GET: Tag
@@ -26,7 +27,11 @@ namespace JustGive.Controllers
                 Tag tag = db.Tags.Find(id);
                 if(tag != null)
                 {
-                    return View(tag);
+                    if(User.IsInRole("Admin"))
+                    {
+                        return View(tag);
+                    }
+                    return RedirectToAction("Index");
                 }
                 return HttpNotFound("Couldn't find the tag id " + id.ToString()); 
             }
@@ -68,7 +73,11 @@ namespace JustGive.Controllers
 
                 if(tag != null)
                 {
-                    return View(tag);
+                    if (User.IsInRole("Admin"))
+                    {
+                        return View(tag);
+                    }
+                    return RedirectToAction("Index");
                 }
                 return HttpNotFound("Couldn't find the tag with id " + id.ToString());
             }
@@ -106,8 +115,12 @@ namespace JustGive.Controllers
                 Tag tag = db.Tags.Find(id);
                 if(tag != null)
                 {
-                    db.Tags.Remove(tag);
-                    db.SaveChanges();
+                    if (User.IsInRole("Admin"))
+                    {
+                        db.Tags.Remove(tag);
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
                     return RedirectToAction("Index");
                 }
                 return HttpNotFound("Couldn't find the tag with id " + id.ToString());

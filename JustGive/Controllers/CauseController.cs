@@ -1,4 +1,5 @@
 ﻿using JustGive.Models;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,10 +8,12 @@ using System.Web.Mvc;
 
 namespace JustGive.Controllers
 {
+    [Authorize]
     public class CauseController : Controller
     {
         private Models.ApplicationDbContext db = new ApplicationDbContext();
         // GET: Cause
+        [AllowAnonymous]
         public ActionResult Index()
         {
             List<Cause> causes = db.Causes.Include("ContactInfo").ToList();
@@ -19,6 +22,7 @@ namespace JustGive.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Details(int? id)
         {
             if (id.HasValue)
@@ -27,6 +31,7 @@ namespace JustGive.Controllers
 
                 if (cause != null)
                 {
+                    ViewBag.UserId = User.Identity.GetUserId();
                     return View(cause);
                 }
                 return HttpNotFound("Couldn't find the cause with id " + id.ToString());
@@ -35,6 +40,7 @@ namespace JustGive.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Donator, Admin")]
         public ActionResult New()
         {
             CauseContactViewModel causeContact = new CauseContactViewModel();
@@ -47,17 +53,13 @@ namespace JustGive.Controllers
         }
         
         [HttpPost]
+        [Authorize(Roles = "Donator, Admin")]
         public ActionResult New(CauseContactViewModel causeContact)
         {
             
             try
             {
                 causeContact.Cause.LocationList = getAllLocations();
-                //causeContact.Cause.Location = db.Locations.Find(causeContact.Cause.LocationId);
-                /*var errors = ModelState
-                    .Where(x => x.Value.Errors.Count > 0)
-                    .Select(x => new { x.Key, x.Value.Errors })
-                    .ToArray();*/
                 ModelState.Remove("Cause.ContactInfo");
 
                 if (ModelState.IsValid)
@@ -65,7 +67,8 @@ namespace JustGive.Controllers
                     ContactInfo contactInfo = new ContactInfo
                     {
                         Name = causeContact.ContactInfo.Name,
-                        PhoneNumber = causeContact.ContactInfo.PhoneNumber
+                        PhoneNumber = causeContact.ContactInfo.PhoneNumber,
+                        BirthDate = causeContact.ContactInfo.BirthDate
                     };
 
                     Cause cause = new Cause
@@ -74,6 +77,7 @@ namespace JustGive.Controllers
                         Description = causeContact.Cause.Description,
                         LocationId = causeContact.Cause.LocationId,
                         ContactInfo = contactInfo,
+                        UserId = User.Identity.GetUserId(),
                         Tags = new List<Tag>(),
                         LocationList = getAllLocations()
                     };
@@ -105,6 +109,7 @@ namespace JustGive.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Donator, Admin")]
         public ActionResult Edit(int ?id)
         {
             if (id.HasValue)
@@ -112,18 +117,22 @@ namespace JustGive.Controllers
                 Cause cause = db.Causes.Find(id);
                 if (cause != null)
                 {
-                    cause.LocationList = getAllLocations();
-                    cause.TagList = GetAllTags();
-                    foreach (Tag tagChecked in cause.Tags)
+                    if (User.Identity.GetUserId() == cause.UserId || User.IsInRole("Admin"))
                     {
-                        //update the checkbox list
-                        cause.TagList.FirstOrDefault(t => t.Id == tagChecked.TagId).IsChecked = true;
-                    }
+                        cause.LocationList = getAllLocations();
+                        cause.TagList = GetAllTags();
+                        foreach (Tag tagChecked in cause.Tags)
+                        {
+                            //update the checkbox list
+                            cause.TagList.FirstOrDefault(t => t.Id == tagChecked.TagId).IsChecked = true;
+                        }
 
-                    CauseContactViewModel causeContact = new CauseContactViewModel();
-                    causeContact.Cause = cause;
-                    causeContact.ContactInfo = cause.ContactInfo;
-                    return View(causeContact);
+                        CauseContactViewModel causeContact = new CauseContactViewModel();
+                        causeContact.Cause = cause;
+                        causeContact.ContactInfo = cause.ContactInfo;
+                        return View(causeContact);
+                    }
+                    return RedirectToAction("Index");
                 }
                 return HttpNotFound("Couldn't find the cause id " + id.ToString());
             }
@@ -131,6 +140,7 @@ namespace JustGive.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Donator, Admin")]
         public ActionResult Edit(int id, CauseContactViewModel causeContactReq)
         {
             //save the tags that where selected into the form
@@ -164,6 +174,7 @@ namespace JustGive.Controllers
                     {
                         contactInfo.Name = causeContactReq.ContactInfo.Name;
                         contactInfo.PhoneNumber = causeContactReq.ContactInfo.PhoneNumber;
+                        contactInfo.BirthDate = causeContactReq.ContactInfo.BirthDate;
                     }
                     return RedirectToAction("Index");
                 }
@@ -177,6 +188,7 @@ namespace JustGive.Controllers
 
 
         [HttpDelete]
+        [Authorize(Roles = "Donator, Admin")]
         public ActionResult Delete(int? id)
         {
             if(id.HasValue)
@@ -184,9 +196,13 @@ namespace JustGive.Controllers
                 Cause cause = db.Causes.Find(id);
                 if(cause != null)
                 {
-                    db.ContactInfos.Remove(cause.ContactInfo);
-                    db.Causes.Remove(cause);
-                    db.SaveChanges();
+                    if (User.Identity.GetUserId() == cause.UserId || User.IsInRole("Admin"))
+                    {
+                        db.ContactInfos.Remove(cause.ContactInfo);
+                        db.Causes.Remove(cause);
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
                     return RedirectToAction("Index");
                     
                 }
@@ -194,6 +210,7 @@ namespace JustGive.Controllers
             }
             return HttpNotFound("Missing id parameter");
         }
+
 
         [NonAction]
         private IEnumerable<SelectListItem> getAllLocations()

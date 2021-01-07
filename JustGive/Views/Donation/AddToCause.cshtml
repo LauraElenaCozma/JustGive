@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewBag.Title = "Choose a Cause";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<br />
+
+@Html.ActionLink("See causes details", "Index", "Cause")
+
+<br />
+<br />
+
+@foreach (var cause in ViewBag.Causes)
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            @Html.Label("Title", "Title:")
+            <br />
+            <p>@cause.Title</p>
+
+            @Html.Label("Description", "Description:")
+            <br />
+            <p>@cause.Description</p>
+            @using (Html.BeginForm(actionName: "ChooseCause", controllerName: "Donation", method: FormMethod.Post, routeValues: new { donationId = ViewBag.DonationId, causeId = cause.CauseId }))
+            {
+                @Html.HttpMethodOverride(HttpVerbs.Put)
+                <button class="btn btn-primary col-lg-2" style="margin-right:5px" type="submit">Donate!</button>
+            }
+        </div>
+    </div>
+}

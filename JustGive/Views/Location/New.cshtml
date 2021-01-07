@@ -1,10 +1,10 @@
 ﻿@model JustGive.Models.Location
 @{
-    ViewBag.Title = "New location";
+    ViewBag.Title = "Add Location";
 }
 
 <h2>@ViewBag.Title</h2>
-
+<br />
 @using (Html.BeginForm(actionName: "New", controllerName: "Location", method: FormMethod.Post))
 {
     @Html.LabelFor(loc => loc.City)

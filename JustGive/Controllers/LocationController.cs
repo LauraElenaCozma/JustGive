@@ -7,6 +7,7 @@ using System.Web.Mvc;
 
 namespace JustGive.Controllers
 {
+    [Authorize]
     public class LocationController : Controller
     {
         private Models.ApplicationDbContext db = new ApplicationDbContext();
@@ -53,7 +54,11 @@ namespace JustGive.Controllers
                 Location location = db.Locations.Find(id);
                 if(location != null)
                 {
-                    return View(location);
+                    if (User.IsInRole("Admin"))
+                    {
+                        return View(location);
+                    }
+                    return RedirectToAction("Index");
                 }
                 return HttpNotFound("Couldn't find the location id " + id.ToString());
             }
@@ -68,7 +73,11 @@ namespace JustGive.Controllers
                 Location location = db.Locations.Find(id);
                 if(location != null)
                 {
-                    return View(location);
+                    if (User.IsInRole("Admin"))
+                    {
+                        return View(location);
+                    }
+                    return RedirectToAction("Index");
                 }
                 return HttpNotFound("Couldn't find the location id " + id.ToString());
             }
@@ -107,8 +116,12 @@ namespace JustGive.Controllers
                 Location location = db.Locations.Find(id);
                 if(location != null)
                 {
-                    db.Locations.Remove(location);
-                    db.SaveChanges();
+                    if (User.IsInRole("Admin"))
+                    {
+                        db.Locations.Remove(location);
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
                     return RedirectToAction("Index");
                 }
                 return HttpNotFound("Couldn't find the location id " + id.ToString());

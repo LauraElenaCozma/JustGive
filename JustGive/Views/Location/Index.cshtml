@@ -4,7 +4,7 @@
 }
 
 <h2>@ViewBag.Title</h2>
-@foreach(var location in Model)
+@foreach (var location in Model)
 {
     <div class="panel panel-default">
         <div class="panel-body">
@@ -13,14 +13,22 @@
             @Html.Label("Country", "Country:")
             <p>@location.Country</p>
             <br />
-            @using (Html.BeginForm(actionName: "Details", controllerName: "Location", method: FormMethod.Get, routeValues: new { id = location.LocationId }))
+            @if (User.IsInRole("Admin"))
             {
-                <button class="btn btn-primary">Details</button>
+                using (Html.BeginForm(actionName: "Details", controllerName: "Location", method: FormMethod.Get, routeValues: new { id = location.LocationId }))
+                {
+                    <button class="btn btn-primary">Details</button>
+                }
             }
         </div>
     </div>
-    
+
 }
 
 <br />
-@Html.ActionLink("Add new Location", "New")
+
+
+@using (Html.BeginForm(actionName: "New", controllerName: "Location", method: FormMethod.Get))
+{
+    <button class="btn btn-primary">Add new Location</button>
+}

@@ -11,13 +11,20 @@
         <div class="panel-body">
             @Html.Label("Title", "Title:")
             <br />
-            <p>@donation.Title</p>
+            @if (@donation.IsDonated == true)
+            {
+                <p>@donation.Title - <em>Donated</em></p>
+            }
+            else
+            {
+                <p>@donation.Title</p>
+            }
 
             @Html.Label("Description", "Description:")
             <br />
             <p>@donation.Description</p>
             @using (Html.BeginForm(actionName: "Details", controllerName: "Donation",
-                    method: FormMethod.Get, routeValues: new { id = donation.DonationId}))
+                    method: FormMethod.Get, routeValues: new { id = donation.DonationId }))
             {
                 <button class=" btn btn-primary">Details</button>
             }
@@ -25,6 +32,10 @@
     </div>
 }
 
-@Html.ActionLink("Add donation", "New")
+@using (Html.BeginForm(actionName: "New", controllerName: "Donation", method: FormMethod.Get))
+{
+    <button class="btn btn-primary">Add new Donation</button>
+}
+
 
 

@@ -11,15 +11,21 @@
 @Html.LabelFor(t => t.Name)
 <br />
 <p>@Model.Name</p>
-<br />
-@using (Html.BeginForm(actionName: "Edit", controllerName: "Tag", method: FormMethod.Get, routeValues: new { id = Model.TagId }))
+@if (User.IsInRole("Admin"))
 {
-    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Edit</button>
+    <br />
+    using (Html.BeginForm(actionName: "Edit", controllerName: "Tag", method: FormMethod.Get, routeValues: new { id = Model.TagId }))
+    {
+        <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Edit</button>
+    }
+    <br />
+    <br />
+    using (Html.BeginForm(actionName: "Delete", controllerName: "Tag", method: FormMethod.Post, routeValues: new { id = Model.TagId }))
+    {
+        @Html.HttpMethodOverride(HttpVerbs.Delete)
+        <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Delete</button>
+    }
 }
 
-@using (Html.BeginForm(actionName: "Delete", controllerName: "Tag", method: FormMethod.Post, routeValues: new { id = Model.TagId }))
-{
-    @Html.HttpMethodOverride(HttpVerbs.Delete)
-    <button class="btn btn-primary col-lg-1" style="margin-right:5px" type="submit">Delete</button>
-}
+<br />
 

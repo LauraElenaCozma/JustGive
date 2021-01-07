@@ -1,9 +1,10 @@
 ﻿@model JustGive.Models.Tag 
 @{
-    ViewBag.Title = "New";
+    ViewBag.Title = "Add Tag";
 }
 
 <h2>@ViewBag.Title</h2>
+<br />
 @using (Html.BeginForm(actionName: "New", controllerName: "Tag", method: FormMethod.Post))
 {
     @Html.LabelFor(t => t.Name)
@@ -16,4 +17,4 @@
 
     <button class="btn btn-primary" type="submit">Create tag</button>
 }
-
+<br />

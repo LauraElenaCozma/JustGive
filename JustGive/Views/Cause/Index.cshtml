@@ -24,6 +24,10 @@
     </div>
 }
 
-@Html.ActionLink("Add cause", "New")
+@using (Html.BeginForm(actionName: "New", controllerName: "Cause", method: FormMethod.Get))
+{
+    <button class="btn btn-primary">Add new Cause</button>
+}
+
 
 
